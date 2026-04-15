@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Todo App</title>
+</head>
+<body>
+
+    <h2>Add Task</h2>
+    <input id="name" placeholder="Name" />
+    <input id="desc" placeholder="Description" />
+    <button onclick="addTask()">Add</button>
+
+    <h2>Tasks</h2>
+    <ul id="list"></ul>
+
+<script>
+    const API = "http://127.0.0.1:8000";
+    async function addTask() {
+        const name = document.getElementById("name").value;
+        const description = document.getElementById("desc").value;
+
+        await fetch(API + "/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                name,
+                description,
+                completed: false
+            })
+        });
+
+        getTasks(); // refresh list
+    }
+    async function getTasks() {
+        const res = await fetch(API + "/");
+        const data = await res.json();
+
+        const list = document.getElementById("list");
+        list.innerHTML = "";
+
+        data.forEach(task => {
+            const li = document.createElement("li");
+            li.innerText = task.name + " - " + task.description;
+            list.appendChild(li);
+        });
+    }
+
+getTasks(); // load on start
+</script>
+</body>
+</html>
